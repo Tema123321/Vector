@@ -80,11 +80,28 @@ class Vector {
     (data_ + size_)->~T();
   }
 
+  void Resize(size_t count) {
+    if (count == size_) {
+      return;
+    }
+    if (count < size_) {
+      size_t copy = size_;
+      for (size_t i = count; i < copy; ++i) {
+        (data_ + i)->~T();
+        --size_;
+      }
+      return;
+    }
+    for (size_t i = size_; i < count; ++i) {
+      PushBack(T());
+    }
+  }
+
   void ShrinkToFit() {
     if (size_ != capacity_) {
       T *temp = static_cast<T *>(operator new(sizeof(T) * size_));
       for (size_t i = 0; i < size_; ++i) {
-        new (temp + i) T(data_[i]);
+        new (temp + i) T(std::move(data_[i]));
       }
       for (size_t i = 0; i < size_; ++i) {
         (data_ + i)->~T();
