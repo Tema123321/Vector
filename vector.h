@@ -34,6 +34,15 @@ class Vector {
     }
   }
 
+  Vector(Vector<T> &&other) { 
+    size_ = other.size_;
+    capacity_ = other.capacity_;
+    data_ = other.data_;
+    other.size_ = 0;
+    other.capacity_ = 0;
+    other.data_ = nullptr;
+  }
+
   size_t Size() const {
     return size_;
   }
@@ -113,6 +122,11 @@ class Vector {
   }
 
   T& operator[](size_t index) { 
+    assert(index < size_);
+    return *(data_ + index);
+  }
+
+  const T &operator[](size_t index) const {
     assert(index < size_);
     return *(data_ + index);
   }
