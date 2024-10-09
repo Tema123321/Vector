@@ -159,7 +159,7 @@ class Vector {
   }
 
   Vector &operator=(const Vector &other) {
-    if (this != other) {
+    if (this != &other) {
       for (size_t i = 0; i < size_; ++i) {
         (data_ + i)->~T();
       }
