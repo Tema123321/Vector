@@ -39,6 +39,8 @@ class Vector {
       for (size_t i = 0; i < j; ++i) {
 	(data_ + i)->~T();
       }
+      operator delete(data_);
+      throw;
     }
   }
 
@@ -127,6 +129,32 @@ class Vector {
       capacity_ = size_;
       data_ = temp;
     }
+  }
+
+  Vector &operator=(const Vector &other) {
+    if (this != other) {
+      for (size_t i = 0; i < size_; ++i) {
+        (data_ + i)->~T();
+      }
+      operator delete(data_);
+      size_ = other.size_;
+      capacity_ = other.capacity_;
+      data_ = static_cast<T *>(operator new(capacity_ * sizeof(T)));
+      try {
+        size_t j = 0;
+        for (size_t i = 0; i < size_; ++i) {
+	  j = i
+          new (data_ + i) T(other.data_[i]);
+        }
+      } catch(...) {
+        for (size_t i = 0; i < j; ++i) {
+	  (data_ + i)->~T();
+        }
+        operator delete(data_);
+        throw;
+      }
+    }
+    return *this;
   }
 
   T& operator[](size_t index) { 
