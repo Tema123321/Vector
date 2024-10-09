@@ -125,6 +125,11 @@ class Vector {
   }
 
   void ShrinkToFit() {
+    if (size_ == 0) {
+      capacity_ = 0;
+      operator delete(data_);
+      return;
+    }
     if (size_ != capacity_) {
       T *temp = static_cast<T *>(operator new(sizeof(T) * size_));
       try {
