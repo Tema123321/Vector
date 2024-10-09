@@ -17,7 +17,7 @@ class Vector {
   }
 
   explicit Vector(size_t size) { 
-	data_ = static_cast<T *>(operator new(size * sizeof(T)));
+    data_ = static_cast<T *>(operator new(size * sizeof(T)));
     size_ = size;
     capacity_ = size;
     for (size_t i = 0; i < size; ++i) {
@@ -29,8 +29,16 @@ class Vector {
     size_ = other.size_;
     capacity_ = other.capacity_;
     data_ = static_cast<T *>(operator new(capacity_ * sizeof(T)));
-    for (size_t i = 0; i < size_; ++i) {
-      new (data_ + i) T(other.data_[i]);
+    try {
+      size_t j;
+      for (size_t i = 0; i < size_; ++i) {
+	j = i
+        new (data_ + i) T(other.data_[i]);
+      }
+    } catch(...) {
+      for (size_t i = 0; i < j; ++i) {
+	(data_ + i)->~T();
+      }
     }
   }
 
@@ -70,7 +78,7 @@ class Vector {
         new (temp + i) T(std::move(data_[i]));
       }
       new (temp + size_) T(el);
-      for (size_t i = 0; i < size_; ++i) {  // Òóò áåäû âîçìîæíî
+      for (size_t i = 0; i < size_; ++i) {  // Ã’Ã³Ã² Ã¡Ã¥Ã¤Ã» Ã¢Ã®Ã§Ã¬Ã®Ã¦Ã­Ã®
         (data_ + i)->~T();
       }
       capacity_ = new_cap;
