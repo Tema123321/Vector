@@ -30,7 +30,7 @@ class Vector {
     capacity_ = other.capacity_;
     data_ = static_cast<T *>(operator new(capacity_ * sizeof(T)));
     try {
-      size_t j;
+      size_t j = 0;
       for (size_t i = 0; i < size_; ++i) {
 	j = i
         new (data_ + i) T(other.data_[i]);
