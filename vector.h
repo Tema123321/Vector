@@ -79,8 +79,16 @@ class Vector {
       for (size_t i = 0; i < size_; ++i) {
         new (temp + i) T(std::move(data_[i]));
       }
-      new (temp + size_) T(el);
-      for (size_t i = 0; i < size_; ++i) {  // Òóò áåäû âîçìîæíî
+      try {      
+        new (temp + size_) T(el);
+      } catch (...) {
+	for (size_t i = 0; i < size_; ++i) {
+         (temp + i)->~T();
+        }
+	operator delete(temp);
+	throw;
+      }
+      for (size_t i = 0; i < size_; ++i) {
         (data_ + i)->~T();
       }
       capacity_ = new_cap;
@@ -119,8 +127,16 @@ class Vector {
   void ShrinkToFit() {
     if (size_ != capacity_) {
       T *temp = static_cast<T *>(operator new(sizeof(T) * size_));
-      for (size_t i = 0; i < size_; ++i) {
-        new (temp + i) T(std::move(data_[i]));
+      try {
+        for (size_t i = 0; i < size_; ++i) {
+          new (temp + i) T(data_[i]);
+        }
+      } catch(...) {
+	for (size_t i = 0; i < size_; ++i) {
+          (temp + i)->~T();
+        }
+	operator delete(temp);
+	throw;
       }
       for (size_t i = 0; i < size_; ++i) {
         (data_ + i)->~T();
@@ -147,6 +163,8 @@ class Vector {
           new (data_ + i) T(other.data_[i]);
         }
       } catch(...) {
+	size_ = 0;
+	capacity_ = 0;
         for (size_t i = 0; i < j; ++i) {
 	  (data_ + i)->~T();
         }
