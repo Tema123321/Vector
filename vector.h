@@ -17,6 +17,9 @@ class Vector {
   }
 
   explicit Vector(size_t size) { 
+    if (size == 0) {
+      return;
+    }
     data_ = static_cast<T *>(operator new(size * sizeof(T)));
     size_ = size;
     capacity_ = size;
@@ -26,6 +29,9 @@ class Vector {
   }
 
   Vector(const Vector<T> &other) {
+    if (other.size_ == 0) {
+      return;
+    }
     size_ = other.size_;
     capacity_ = other.capacity_;
     data_ = static_cast<T *>(operator new(capacity_ * sizeof(T)));
@@ -158,6 +164,12 @@ class Vector {
         (data_ + i)->~T();
       }
       operator delete(data_);
+      if (other.size_ == 0) {
+	size_ = 0;
+	capacity_ = 0;
+	data_ = nullptr;
+	return *this;
+      }
       size_ = other.size_;
       capacity_ = other.capacity_;
       data_ = static_cast<T *>(operator new(capacity_ * sizeof(T)));
